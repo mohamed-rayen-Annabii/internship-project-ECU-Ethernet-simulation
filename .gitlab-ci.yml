@@ -5,7 +5,6 @@ stages:
 # Step 1: Setup ECU network namespaces
 setup_network:
   stage: setup
-  tags:
   script:
     - echo " Running setup script..."
     - chmod +x setup_netns.sh
