@@ -1,3 +1,10 @@
-job:
+stages:
+  - test
+
+check_runner:
+  stage: test
+O
   script:
-    - echo "Hello from runner"
+    - echo " ECU Simulation Runner is working!"
+    - whoami
+    - uname -a
