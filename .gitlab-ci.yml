@@ -1,12 +1,3 @@
-stages:
-  - test
-
-check_runner:
-  stage: test
-  tags:
-    - linux
-    - ecu
+job:
   script:
-    - echo " ECU Simulation Runner is working!"
-    - whoami
-    - uname -a
+    - echo "Hello from runner"
