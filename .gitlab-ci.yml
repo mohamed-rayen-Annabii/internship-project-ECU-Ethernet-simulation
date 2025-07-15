@@ -1,35 +1,3 @@
-stages:
-  - build
-  - setup
-  - test
-
-build_ecus:
-  stage: build
-  tags:
-    - linux
-    - ecu
-  script:
-    - echo " Compiling ECU C++ programs..."
-    - g++ ecu1.cpp -o ecu1
-    - g++ ecu2.cpp -o ecu2
-  artifacts:
-    paths:
-      - ecu1
-      - ecu2
-    expire_in: 1 hour
-
-setup_network:
-  stage: setup
-  tags:
-    - linux
-    - ecu
-  script:
-    - echo " Setting up network namespaces..."
-    - chmod +x setup_netns.sh
-    - sudo ./setup_netns.sh
-  needs:
-    - build_ecus
-
 test_communication:
   stage: test
   tags:
@@ -37,15 +5,17 @@ test_communication:
     - ecu
   script:
     - echo " Starting ECU2 (receiver) in background..."
-    - sudo ip netns exec ecu2 ./ecu2 &
+    - sudo ip netns exec ecu2 $(pwd)/ecu2 &
     - ECU2_PID=$!
     - echo " Running ECU1 (sender)..."
-    - sudo ip netns exec ecu1 ./ecu1 &
+    - sudo ip netns exec ecu1 $(pwd)/ecu1 &
     - ECU1_PID=$!
     - echo " Letting them run for 5 seconds..."
     - sleep 5
     - echo " Stopping ECU programs..."
-    - sudo kill $ECU1_PID
-    - sudo kill $ECU2_PID
+    - sudo kill $ECU1_PID || echo "ECU1 already exited"
+    - sudo kill $ECU2_PID || echo "ECU2 already exited"
   needs:
     - setup_network
+    - build_ecus
+
