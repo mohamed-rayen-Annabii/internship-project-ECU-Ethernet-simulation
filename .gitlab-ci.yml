@@ -1,21 +1,12 @@
 stages:
-  - setup
   - test
 
-setup_environment:
-  stage: setup
-  script:
-    - chmod +x setup_netns.sh
-    - sudo ./setup_netns.sh
+check_runner:
+  stage: test
   tags:
     - linux
     - ecu
-  when: manual
-
-ping_test:
-  stage: test
   script:
-    - sudo ip netns exec ecu1 ping -c 2 10.0.0.2
-  tags:
-    - linux
-  when: manual
+    - echo " ECU Simulation Runner is working!"
+    - whoami
+    - uname -a
