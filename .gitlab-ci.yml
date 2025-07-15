@@ -3,6 +3,10 @@ stages:
   - simulate
   - cleanup
 
+default:
+  tags:
+  - linux
+  - ecu
 variables:
   CXX: g++
   BUILD_DIR: build
