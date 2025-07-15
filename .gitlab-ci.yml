@@ -23,7 +23,7 @@ simulate:
     - linux
     - ecu
   script:
-    - chmod +x setup.sh cleanup.sh
+    - chmod +x setup_netns.sh cleanup.sh
     - sudo ./setup_netns.sh
 
     # Run ECU2 server in background
