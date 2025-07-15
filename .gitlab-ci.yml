@@ -1,25 +1,46 @@
 stages:
   - setup
-  - test
+  - simulate
 
-# Step 1: Setup ECU network namespaces
-setup_network:
+setup_namespaces:
   stage: setup
   script:
-    - echo " Running setup script..."
-    - chmod +x setup_netns.sh
-    - sudo ./setup_netns.sh
-  allow_failure: false
-  when: on_success
-
-# Step 2: Test communication between ECUs
-test_ping:
-  stage: test
+    - echo "Running namespace setup..."
+    - sudo bash scripts/setup_netns.sh || { echo "Namespace setup failed"; exit 1; }
+    - sudo ip netns exec ecu1 ping -c 4 10.0.0.2 > logs/setup_results.txt || { echo "Ping failed"; exit 1; }
+  artifacts:
+    paths:
+      - logs/setup_results.txt
+    when: always
   tags:
     - linux
     - ecu
+
+simulate_ecu:
+  stage: simulate
+  before_script:
+    - g++ src/ecu1.cpp -o ecu1 || { echo "Compilation of ecu1.cpp failed"; exit 1; }
+    - g++ src/ecu2.cpp -o ecu2 || { echo "Compilation of ecu2.cpp failed"; exit 1; }
+    - sudo bash scripts/setup_netns.sh || { echo "Namespace setup failed"; exit 1; }
+    - sudo ip netns exec ecu1 ip addr show veth1 > logs/ecu1_ip.txt
+    - sudo ip netns exec ecu2 ip addr show veth2 > logs/ecu2_ip.txt
+    - mkdir -p logs
   script:
-    - echo " Testing communication from ECU1 to ECU2..."
-    - sudo ip netns exec ecu1 ping -c 3 10.0.0.2
-  allow_failure: false
-  when: on_success
+    - echo "Starting receiver in ecu2..."
+    - sudo ip netns exec ecu2 ./ecu2 > logs/receiver_log.txt 2>&1 &
+    - sleep 10
+    - echo "Starting sender in ecu1..."
+    - sudo ip netns exec ecu1 ./ecu1 > logs/sender_log.txt || { echo "Sender failed"; exit 1; }
+    - echo "Capturing traffic in ecu2..."
+    - sudo ip netns exec ecu2 tcpdump -i veth2 -c 5 -w logs/sim_packets.pcap || { echo "tcpdump failed"; exit 1; }
+  artifacts:
+    paths:
+      - logs/sender_log.txt
+      - logs/receiver_log.txt
+      - logs/sim_packets.pcap
+      - logs/ecu1_ip.txt
+      - logs/ecu2_ip.txt
+    when: always
+  tags:
+    - linux
+    - ecu
