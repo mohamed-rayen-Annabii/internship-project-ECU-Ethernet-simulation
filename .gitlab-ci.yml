@@ -19,9 +19,12 @@ build:
 
 simulate:
   stage: simulate
+  tags:
+    - linux
+    - ecu
   script:
     - chmod +x setup.sh cleanup.sh
-    - sudo ./setup.sh
+    - sudo ./setup_netns.sh
 
     # Run ECU2 server in background
     - sudo ip netns exec ecu2 /home/ons/summerInternship2025/ecus_simulation/build/ecu2 > ecu2_output.txt 2>&1 &
