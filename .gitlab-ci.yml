@@ -6,8 +6,6 @@ stages:
 setup_network:
   stage: setup
   tags:
-    - linux
-    - ecu
   script:
     - echo " Running setup script..."
     - chmod +x setup_netns.sh
