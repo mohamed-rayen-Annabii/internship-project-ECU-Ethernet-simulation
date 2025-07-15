@@ -1,3 +1,35 @@
+stages:
+  - build
+  - setup
+  - test
+
+build_ecus:
+  stage: build
+  tags:
+    - linux
+    - ecu
+  script:
+    - echo " Compiling ECU C++ programs..."
+    - g++ ecu1.cpp -o ecu1
+    - g++ ecu2.cpp -o ecu2
+  artifacts:
+    paths:
+      - ecu1
+      - ecu2
+    expire_in: 1 hour
+
+setup_network:
+  stage: setup
+  tags:
+    - linux
+    - ecu
+  script:
+    - echo "Setting up network namespaces..."
+    - chmod +x setup_netns.sh
+    - sudo ./setup_netns.sh
+  needs:
+    - build_ecus
+
 test_communication:
   stage: test
   tags:
