@@ -22,7 +22,7 @@ int main() {
     }
 
     char buffer[1024];
-    while (true) {
+    for (int i = 0; i < 5; ++i) {
         sockaddr_in senderAddr{};
         socklen_t addrLen = sizeof(senderAddr);
         ssize_t recvLen = recvfrom(sock, buffer, sizeof(buffer) - 1, 0,

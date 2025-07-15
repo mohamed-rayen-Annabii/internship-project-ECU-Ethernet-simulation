@@ -25,7 +25,7 @@ int main() {
 
     const char* message = "ECU1: status OK";
 
-    while (true) {
+    for (int i = 0; i < 5; ++i) {
         ssize_t sent = sendto(sock, message, strlen(message), 0,
                               (sockaddr*)&destAddr, sizeof(destAddr));
         if (sent < 0) {
@@ -39,3 +39,4 @@ int main() {
     close(sock);
     return 0;
 }
+
