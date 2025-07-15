@@ -1,53 +1,48 @@
 stages:
   - build
-  - setup
-  - test
+  - simulate
+  - cleanup
 
-build_ecus:
+variables:
+  CXX: g++
+  BUILD_DIR: build
+
+build:
   stage: build
-  tags:
-    - linux
-    - ecu
   script:
-    - echo " Compiling ECU C++ programs..."
-    - g++ ecu1.cpp -o ecu1
-    - g++ ecu2.cpp -o ecu2
+    - mkdir -p $BUILD_DIR
+    - $CXX ecu1.cpp -o $BUILD_DIR/ecu1
+    - $CXX ecu2.cpp -o $BUILD_DIR/ecu2
   artifacts:
     paths:
-      - ecu1
-      - ecu2
-    expire_in: 1 hour
+      - $BUILD_DIR
 
-setup_network:
-  stage: setup
-  tags:
-    - linux
-    - ecu
+simulate:
+  stage: simulate
   script:
-    - echo "Setting up network namespaces..."
-    - chmod +x setup_netns.sh
-    - sudo ./setup_netns.sh
-  needs:
-    - build_ecus
+    - chmod +x setup.sh cleanup.sh
+    - sudo ./setup.sh
 
-test_communication:
-  stage: test
-  tags:
-    - linux
-    - ecu
+    # Run ECU2 server in background
+    - sudo ip netns exec ecu2 /home/ons/summerInternship2025/ecus_simulation/build/ecu2 > ecu2_output.txt 2>&1 &
+    - sleep 1  # wait for server to start
+
+    # Run ECU1 client once
+    - sudo ip netns exec ecu1 /home/ons/summerInternship2025/ecus_simulation/build/ecu1 &
+    - sleep 2  # give it time to send
+
+    - echo "===== ECU2 Output ====="
+    - cat ecu2_output.txt
+    - grep "status OK" ecu2_output.txt
+
+  dependencies:
+    - build
+  artifacts:
+    when: always
+    paths:
+      - ecu2_output.txt
+
+cleanup:
+  stage: cleanup
   script:
-    - echo " Starting ECU2 (receiver) in background..."
-    - sudo ip netns exec ecu2 $(pwd)/ecu2 &
-    - ECU2_PID=$!
-    - echo " Running ECU1 (sender)..."
-    - sudo ip netns exec ecu1 $(pwd)/ecu1 &
-    - ECU1_PID=$!
-    - echo " Letting them run for 5 seconds..."
-    - sleep 5
-    - echo " Stopping ECU programs..."
-    - sudo kill $ECU1_PID || echo "ECU1 already exited"
-    - sudo kill $ECU2_PID || echo "ECU2 already exited"
-  needs:
-    - setup_network
-    - build_ecus
-
+    - sudo ./cleanup.sh

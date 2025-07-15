@@ -1,11 +1,20 @@
-# ECU Simulation Environment
+# ECU Simulation Setup
 
-This project simulates communication between two ECUs using Linux namespaces and virtual Ethernet pairs.
+This simulates communication between two ECUs using Linux namespaces and virtual ethernet (veth).
 
-## Structure
-- `setup_netns.sh`: Automates network namespace setup
-- `setup.md`: Manual setup guide
-- `.gitlab-ci.yml`: CI/CD pipeline for testing setup
+## Files
 
-## Requirements
-- Linux system with `iproute2`, `ping`, and `sudo` privileges
+- `ecu1.cpp`: UDP client sending "status OK" every second.
+- `ecu2.cpp`: UDP server receiving messages on port 9090.
+- `setup.sh`: Sets up namespaces, veth pairs, assigns IPs.
+- `cleanup.sh`: Tears down the simulation cleanly.
+- `Makefile`: For compiling both ECUs.
+- `run_ecu1.sh`, `run_ecu2.sh`: Start ECU programs in their namespaces.
+
+## Setup
+
+```bash
+sudo ./setup.sh
+make
+sudo ./run_ecu2.sh   # In one terminal
+sudo ./run_ecu1.sh   # In another
