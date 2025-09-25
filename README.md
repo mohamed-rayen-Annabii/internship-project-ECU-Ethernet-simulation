@@ -41,7 +41,7 @@ ecus_simulation/
 - `ecu1.cpp`: Sends "status OK" every second via UDP to ECU2 
 - `ecu2.cpp`: Listens for messages on UDP port 9090 
 - `Makefile`: Compiles ECU binaries (`ecu1`, `ecu2`)
-- `setup_netns.sh`: Creates two namespaces (`ecu1`, `ecu2`), veth pair, assigns IPs, adds routes, and tests connectivity 
+- `setup_netns.sh`: Creates two namespaces (`ecu1`, `ecu2`),  2 veth pair, bridge , assigns IPs, adds routes, and tests connectivity 
 - `cleanup.sh`: Removes namespaces and interfaces cleanly 
 - `run_ecu1.sh`: Runs `ecu1` inside its namespace 
 - `run_ecu2.sh`: Runs `ecu2` inside its namespace 
@@ -53,7 +53,7 @@ ecus_simulation/
 Scripts in this directory inject different types of faults:
 
 - `block.sh`: Blocks all traffic from ECU1 to ECU2 
-- `delay.sh`: Adds 300ms delay on ECU1’s veth interface 
+- `delay.sh`: Adds 300ms delay 
 - `loss.sh`: Adds 20% packet loss 
 - `corrupt.sh`: Adds 5% packet corruption 
 - `reset.sh`: Resets all faults (removes all netem rules)
@@ -62,43 +62,7 @@ Scripts in this directory inject different types of faults:
 
 ---
 
-##  Testing (`test/`)
 
-Automated test scripts for each fault:
-
-- `test_block.sh` 
-- `test_delay.sh` 
-- `test_loss.sh` 
-- `test_corrupt.sh` 
-
-Each test:
-- Runs `setup_netns.sh`
-- Launches ECUs
-- Injects a specific fault
-- Verifies if the expected behavior is observed
-- Writes a result (e.g., `PASSED: ...`) into a log file:
-test/block.log
-test/delay.log
-test/loss.log
-test/corrupt.log
-
-###  Summary Report
-
-The file `test/generate_summary.sh` generates a markdown summary file `test/results.md` by parsing the `.log` files and displaying a status table:
-
-| Fault Type | Status | Details                      |
-| ---------- | ------ | ---------------------------- |
-| block      | Passed | Blocked packets successfully |
-| delay      | Failed | Check delay.log for details  |
-| ...        | ...    | ...                          |
-
->  This is automatically done in GitLab CI after all fault tests are executed.
-
-## How to Use
-
-### Compile
-
-```bash
 make
 
 #### Setup Network & Run Simulation
