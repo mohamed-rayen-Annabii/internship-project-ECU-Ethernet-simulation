@@ -1,15 +1,17 @@
 stages:
   - build
   - simulate
-  - cleanup
+  - fault-test
+  - summary
 
 default:
   tags:
-  - linux
-  - ecu
+    - linux
+    - ecu
+
 variables:
-  CXX: g++
   BUILD_DIR: build
+  CXX: g++
 
 build:
   stage: build
@@ -23,33 +25,68 @@ build:
 
 simulate:
   stage: simulate
-  tags:
-    - linux
-    - ecu
   script:
     - chmod +x setup_netns.sh cleanup.sh
     - sudo ./setup_netns.sh
-
-    # Run ECU2 server in background
-    - sudo ip netns exec ecu2 /home/ons/summerInternship2025/ecus_simulation/build/ecu2 > ecu2_output.txt 2>&1 &
-    - sleep 1  # wait for server to start
-
-    # Run ECU1 client once
-    - sudo ip netns exec ecu1 /home/ons/summerInternship2025/ecus_simulation/build/ecu1 &
-    - sleep 2  # give it time to send
-
-    - echo "===== ECU2 Output ====="
-    - cat ecu2_output.txt
-    - grep "status OK" ecu2_output.txt
-
-  dependencies:
-    - build
+    - sudo ip netns exec ecu2 ./$BUILD_DIR/ecu2 > ecu2_output.txt 2>&1 &
+    - sleep 1
+    - sudo ip netns exec ecu1 ./$BUILD_DIR/ecu1 > /dev/null 2>&1 &
+    - sleep 3
   artifacts:
-    when: always
     paths:
       - ecu2_output.txt
 
-cleanup:
-  stage: cleanup
+# One job per fault
+test_block:
+  stage: fault-test
   script:
-    - sudo ./cleanup.sh
+    - sudo ./faults/reset.sh
+    - sleep 1
+    - bash test/test_block.sh > test/block.log
+    - sudo ./faults/reset.sh
+  artifacts:
+    paths:
+      - test/block.log
+
+test_delay:
+  stage: fault-test
+  script:
+    - sudo ./faults/reset.sh
+    - sleep 1
+    - bash test/test_delay.sh > test/delay.log
+    - sudo ./faults/reset.sh
+  artifacts:
+    paths:
+      - test/delay.log
+
+test_loss:
+  stage: fault-test
+  script:
+    - sudo ./faults/reset.sh
+    - sleep 1
+    - bash test/test_loss.sh > test/loss.log
+    - sudo ./faults/reset.sh
+  artifacts:
+    paths:
+      - test/loss.log
+
+test_corrupt:
+  stage: fault-test
+  script:
+    - sudo ./faults/reset.sh
+    - sleep 1
+    - bash test/test_corrupt.sh > test/corrupt.log
+    - sudo ./faults/reset.sh
+  artifacts:
+    paths:
+      - test/corrupt.log
+
+summary:
+  stage: summary
+  script:
+    - chmod +x test/generate_summary.sh
+    - ./test/generate_summary.sh
+    - cat test/results.md
+  artifacts:
+    paths:
+      - test/results.md

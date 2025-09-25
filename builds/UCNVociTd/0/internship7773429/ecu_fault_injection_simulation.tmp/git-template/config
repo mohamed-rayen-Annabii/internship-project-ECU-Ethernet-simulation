@@ -1,0 +1,14 @@
+[init]
+	defaultBranch = none
+[fetch]
+	recurseSubmodules = false
+[credential]
+	interactive = never
+[gc]
+	autoDetach = false
+[http]
+	extraHeader = X-Gitaly-Correlation-ID: 4d9ab168b6c297feef42eea0cc59f298
+[transfer]
+	bundleURI = true
+[http "https://gitlab.com"]
+	sslCAInfo = /home/ons/summerInternship2025/ecus_simulation/builds/UCNVociTd/0/internship7773429/ecu_fault_injection_simulation.tmp/CI_SERVER_TLS_CA_FILE

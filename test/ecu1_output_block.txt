@@ -1,0 +1,6 @@
+Sent message 0: ECU1: status OK, sending a longer message to increase corruption visibility
+Received reply: ECU2: ACK ECU1: status OK, sending a longer message to increase corruption visibility
+Sent message 1: ECU1: status OK, sending a longer message to increase corruption visibility
+Received reply: ECU2: ACK ECU1: status OK, sending a longer message to increase corruption visibility
+Send failed: Operation not permitted
+No reply received (timeout or error)

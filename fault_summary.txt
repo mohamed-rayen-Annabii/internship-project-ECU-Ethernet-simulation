@@ -1,0 +1,27 @@
+ECU2 Fault Summary
+==================
+Total messages: 21
+Received: 0
+Not Received: 21
+
+Message 1: not received (timeout)
+Message 2: not received (timeout)
+Message 3: not received (timeout)
+Message 4: not received (timeout)
+Message 5: not received (timeout)
+Message 6: not received (timeout)
+Message 7: not received (timeout)
+Message 8: not received (timeout)
+Message 9: not received (timeout)
+Message 10: not received (timeout)
+Message 11: not received (timeout)
+Message 12: not received (timeout)
+Message 13: not received (timeout)
+Message 14: not received (timeout)
+Message 15: not received (timeout)
+Message 16: not received (timeout)
+Message 17: not received (timeout)
+Message 18: not received (timeout)
+Message 19: not received (timeout)
+Message 20: not received (timeout)
+Message 21: not received (timeout)

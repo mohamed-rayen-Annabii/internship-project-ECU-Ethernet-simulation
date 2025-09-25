@@ -1,10 +1,12 @@
-all: ecu1 ecu2
+all: build/ecu1 build/ecu2
 
-ecu1: ecu1.cpp
-	g++ -o ecu1 ecu1.cpp
+build/ecu1: ecu1.cpp
+	mkdir -p build
+	g++ -o build/ecu1 ecu1.cpp
 
-ecu2: ecu2.cpp
-	g++ -o ecu2 ecu2.cpp
+build/ecu2: ecu2.cpp
+	mkdir -p build
+	g++ -o build/ecu2 ecu2.cpp
 
 clean:
-	rm -f ecu1 ecu2
+	rm -f build/ecu1 build/ecu2

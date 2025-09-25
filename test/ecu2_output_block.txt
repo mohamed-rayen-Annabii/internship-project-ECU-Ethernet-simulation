@@ -1,0 +1,4 @@
+Received: ECU1: status OK, sending a longer message to increase corruption visibility (raw bytes: 45 43 55 31 3a 20 73 74 61 74 75 73 20 4f 4b 2c 20 73 65 6e 64 69 6e 67 20 61 20 6c 6f 6e 67 65 72 20 6d 65 73 73 61 67 65 20 74 6f 20 69 6e 63 72 65 61 73 65 20 63 6f 72 72 75 70 74 69 6f 6e 20 76 69 73 69 62 69 6c 69 74 79 )
+Sent reply: ECU2: ACK ECU1: status OK, sending a longer message to increase corruption visibility
+Received: ECU1: status OK, sending a longer message to increase corruption visibility (raw bytes: 45 43 55 31 3a 20 73 74 61 74 75 73 20 4f 4b 2c 20 73 65 6e 64 69 6e 67 20 61 20 6c 6f 6e 67 65 72 20 6d 65 73 73 61 67 65 20 74 6f 20 69 6e 63 72 65 61 73 65 20 63 6f 72 72 75 70 74 69 6f 6e 20 76 69 73 69 62 69 6c 69 74 79 )
+Sent reply: ECU2: ACK ECU1: status OK, sending a longer message to increase corruption visibility
